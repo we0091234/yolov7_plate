@@ -1,0 +1,1 @@
+python train.py  --batch-size 32 --data data/plate.yaml --img 640 640 --cfg cfg/yolov7-lite-e-plate.yaml --weights weights/yolov7-lite-e.pt --name yolov7 --hyp data/hyp.face.yaml

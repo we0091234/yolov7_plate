@@ -10,6 +10,7 @@ runs/
 build/
 result1/
 *.pyc
+plate/
 # 不忽略下面指定的文件类型
 !*.cpp
 !*.h
@@ -24,3 +25,7 @@ result1/
 !*.npy
 !*.pth
 !*.png
+!*.md
+!*.txt
+!*.yaml
+!*.ttf

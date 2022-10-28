@@ -121,20 +121,21 @@ def draw_result(orgimg,dict_list):
         landmarks=result['landmarks']
         result = result['plate_no']
         result_str+=result+" "
-        for i in range(4):  #关键点
-            cv2.circle(orgimg, (int(landmarks[i][0]), int(landmarks[i][1])), 5, clors[i], -1)
-        cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,255,0),2) #画框
+      
         if len(result)>=7:
-            orgimg=cv2ImgAddText(orgimg,result,rect_area[0]-height_area,rect_area[1]-height_area-10,(255,0,0),height_area)
+            for i in range(4):  #关键点
+                cv2.circle(orgimg, (int(landmarks[i][0]), int(landmarks[i][1])), 5, clors[i], -1)
+            cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,0,255),2) #画框
+            orgimg=cv2ImgAddText(orgimg,result,rect_area[0]-height_area,rect_area[1]-height_area-10,(0,255,0),height_area)
     print(result_str)
     return orgimg
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--detect_model', nargs='+', type=str, default='runs/train/exp/weights/last.pt', help='model.pt path(s)')
+    parser.add_argument('--detect_model', nargs='+', type=str, default='runs/train/exp/weights/best.pt', help='model.pt path(s)')
     parser.add_argument('--rec_model', type=str, default='weights/plate_rec.pth', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='../Chinese_license_plate_detection_recognition/imgs/', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--source', type=str, default='imgs', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--output', type=str, default='result1', help='source') 

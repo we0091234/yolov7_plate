@@ -121,11 +121,11 @@ def draw_result(orgimg,dict_list):
         landmarks=result['landmarks']
         result = result['plate_no']
         result_str+=result+" "
-      
+        cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,0,255),2) #画框
         if len(result)>=7:
             for i in range(4):  #关键点
                 cv2.circle(orgimg, (int(landmarks[i][0]), int(landmarks[i][1])), 5, clors[i], -1)
-            cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,0,255),2) #画框
+            
             orgimg=cv2ImgAddText(orgimg,result,rect_area[0]-height_area,rect_area[1]-height_area-10,(0,255,0),height_area)
     print(result_str)
     return orgimg
@@ -138,9 +138,10 @@ if __name__ == '__main__':
     parser.add_argument('--source', type=str, default='imgs', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
-    parser.add_argument('--output', type=str, default='result1', help='source') 
+    parser.add_argument('--output', type=str, default='result', help='source') 
     parser.add_argument('--kpt-label', type=int, default=4, help='number of keypoints')
     device  =torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cpu")
     opt = parser.parse_args()
     print(opt)
     model = attempt_load(opt.detect_model, map_location=device)
@@ -150,6 +151,7 @@ if __name__ == '__main__':
 
     file_list=[]
     allFilePath(opt.source,file_list)
+    time_b = time.time()
     for pic_ in file_list:
         print(pic_,end=" ")
         img = cv2.imread(pic_)
@@ -159,3 +161,4 @@ if __name__ == '__main__':
         img_name = os.path.basename(pic_)
         save_img_path = os.path.join(opt.output,img_name)
         cv2.imwrite(save_img_path,ori_img)
+    print(f"elasted time is {time.time()-time_b} s")

@@ -71,6 +71,7 @@ def get_plate_rec_landmark(img, xyxy, conf, landmarks, class_num,device,plate_re
     result_dict['landmarks']=landmarks_np.tolist()
     result_dict['plate_no']=plate_number
     result_dict['roi_height']=roi_img.shape[0]
+    result_dict['score']=conf
     return result_dict
 
 def detect_Recognition_plate(model, orgimg, device,plate_rec_model,img_size):
@@ -119,7 +120,7 @@ def draw_result(orgimg,dict_list):
 
         height_area = result['roi_height']
         landmarks=result['landmarks']
-        result = result['plate_no']
+        result = result['plate_no']+" "+"{:.2f}".format(result['score'])
         result_str+=result+" "
         cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,0,255),2) #画框
         if len(result)>=7:
@@ -133,9 +134,9 @@ def draw_result(orgimg,dict_list):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--detect_model', nargs='+', type=str, default='runs/train/exp/weights/best.pt', help='model.pt path(s)')
+    parser.add_argument('--detect_model', nargs='+', type=str, default='weights/plate_detect.pt', help='model.pt path(s)')
     parser.add_argument('--rec_model', type=str, default='weights/plate_rec.pth', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='imgs', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--source', type=str, default='../Chinese_license_plate_detection_recognition/mytest/', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--output', type=str, default='result', help='source') 
@@ -145,6 +146,7 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     print(opt)
     model = attempt_load(opt.detect_model, map_location=device)
+    # torch.save()
     plate_rec_model=init_model(device,opt.rec_model) 
     if not os.path.exists(opt.output):
         os.mkdir(opt.output)

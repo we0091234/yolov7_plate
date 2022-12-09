@@ -362,8 +362,8 @@ def test(data,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='test.py')
-    parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
-    parser.add_argument('--data', type=str, default='data/coco128.yaml', help='*.data path')
+    parser.add_argument('--weights', nargs='+', type=str, default='weights/plate_detect.pt', help='model.pt path(s)')
+    parser.add_argument('--data', type=str, default='data/plate.yaml', help='*.data path')
     parser.add_argument('--batch-size', type=int, default=32, help='size of each image batch')
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.001, help='object confidence threshold')
@@ -384,7 +384,7 @@ if __name__ == '__main__':
     parser.add_argument('--project', default='runs/test', help='save to project/name')
     parser.add_argument('--name', default='exp', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--kpt-label', type=int, default=5, help='number of keypoints')
+    parser.add_argument('--kpt-label', type=int, default=4, help='number of keypoints')
     parser.add_argument('--flip-test', action='store_true', help='Whether to run flip_test or not')
     opt = parser.parse_args()
     opt.save_json |= opt.data.endswith('coco.yaml')

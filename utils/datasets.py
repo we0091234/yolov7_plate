@@ -361,7 +361,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         self.stride = stride
         self.path = path
         self.kpt_label = kpt_label
-        self.flip_index = [1, 0, 2, 4, 3]  #人脸
+        self.flip_index = [1, 0, 2, 4, 3]  #人脸 4是鼻子
         self.flip_index_plate = [1, 0, 3, 2]  #车牌
 
         try:

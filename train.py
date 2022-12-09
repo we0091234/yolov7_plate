@@ -484,7 +484,7 @@ if __name__ == '__main__':
     parser.add_argument('--cfg', type=str, default='cfg/yolov7-lite-e-plate.yaml', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data/plate.yaml', help='data.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyp.face.yaml', help='hyperparameters path')
-    parser.add_argument('--epochs', type=int, default=1)
+    parser.add_argument('--epochs', type=int, default=120)
     parser.add_argument('--batch-size', type=int, default=32, help='total batch size for all GPUs')
     parser.add_argument('--img-size', nargs='+', type=int, default=[640, 640], help='[train, test] image sizes')
     parser.add_argument('--rect', action='store_true', help='rectangular training')

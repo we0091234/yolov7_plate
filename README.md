@@ -67,7 +67,7 @@ python detect_rec_plate.py --detect_model weights/plate_detect.pt  --rec_model w
 ## 部署
 
 * [onnx 推理](https://github.com/we0091234/yolov7_plate/tree/master/onnx)
-* tensorrt推理
+* [tensorrt推理](https://github.com/we0091234/yolov7_plate/tree/master/tensorrt)
 
 ## References
 

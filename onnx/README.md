@@ -11,5 +11,5 @@ python models/export.py --weights weights/plate_detect.pt --grid
 3.车牌检测+车牌识别  onnx推理
 
 ```
- python yolov7_plate_onnx_infer.py --detect_model weights/plate_detect.onnx --rec_model weights/plate_rec.onnx --image_path imgs --output result
+ python onnx/yolov7_plate_onnx_infer.py --detect_model weights/plate_detect.onnx --rec_model weights/plate_rec.onnx --image_path imgs --output result
 ```

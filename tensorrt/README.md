@@ -24,9 +24,9 @@
    ```
    当前在build目录
    #1 生成检测模型
-   ./onnx2trt/onnx2trt  ../onnx_model/plate_detect.onnx ./plate_detect.trt  1
+   ./onnx2trt/onnx2trt  ../v7_onnx_model/plate_detect.onnx ./plate_detect.trt  1
    #2 生成识别模型
-   ./onnx2trt/onnx2trt  ../onnx_model/plate_rec.onnx ./plate_rec.trt  1
+   ./onnx2trt/onnx2trt  ../v7_onnx_model/plate_rec.onnx ./plate_rec.trt  1
    ```
 4. 推理
 

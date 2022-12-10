@@ -19,7 +19,7 @@
    3. make
 
    ```
-3. onnx 转成tensorrt模型  onnx模型看这里[车牌识别](https://github.com/we0091234/Chinese_license_plate_detection_recognition)
+3. onnx 转成tensorrt模型  onnx模型看这里[p868](https://pan.baidu.com/s/1FRqreQcu7mlaZXcI8eo_5Q)    或者训练自己的模型导出
 
    ```
    当前在build目录

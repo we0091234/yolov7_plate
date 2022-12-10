@@ -215,7 +215,7 @@ class IDetect(nn.Module):
 class IKeypoint(nn.Module):
     stride = None  # strides computed during build
     export = False  # onnx export
-
+    export_cat = False  # onnx export cat output
     def __init__(self, nc=80, anchors=(), nkpt=5, ch=(), inplace=True, dw_conv_kpt=False):  # detection layer
         super(IKeypoint, self).__init__()
         self.nc = nc  # number of classes
@@ -254,6 +254,57 @@ class IKeypoint(nn.Module):
         # x = x.copy()  # for profiling
         z = []  # inference output
         self.training |= self.export
+        if self.export_cat:
+            for i in range(self.nl):
+                x[i] = torch.cat((self.im[i](self.m[i](self.ia[i](x[i]))), self.m_kpt[i](x[i])), axis=1)
+                bs, _, ny, nx = map(int,x[i].shape)  # x(bs,255,20,20) to x(bs,3,20,20,85)
+                bs=-1
+                x[i] = x[i].view(bs, self.na, self.no, ny, nx).permute(0, 1, 3, 4, 2).contiguous()
+                x_det = x[i][..., :5+self.nc]
+                x_kpt = x[i][..., 5+self.nc:]
+
+                if self.grid[i].shape[2:4] != x[i].shape[2:4]:
+                    self.grid[i] = self._make_grid(nx, ny).to(x[i].device)
+                kpt_grid_x = self.grid[i][:,:,:,:, 0:1]
+                kpt_grid_y = self.grid[i][:,:,:,:, 1:2]
+
+                y = x_det.sigmoid()
+
+              
+                xy = (y[:,:,:,:, 0:2] * 2. - 0.5 + self.grid[i]) * self.stride[i]  # xy
+                wh = (y[:,:,:,:, 2:4] * 2) ** 2 * self.anchor_grid[i].view(1, self.na, 1, 1, 2) # wh
+                classfify=y[...,4:]  
+                # x_kpt[:,:,:,:, 0::3] = (x_kpt[:,:,:,:, ::3] * 2. - 0.5 + kpt_grid_x.repeat(1,1,1,1,self.nkpt)) * self.stride[i]  # xy
+                # x_kpt[:,:,:,:,1::3] = (x_kpt[:,:,:,:, 1::3] * 2. - 0.5 + kpt_grid_y.repeat(1,1,1,1,self.nkpt)) * self.stride[i]  # xy
+                # x_kpt[:,:,:,:,2::3] = x_kpt[:,:,:,:, 2::3].sigmoid()
+
+                x1=(x_kpt[:,:,:,:, 0:1] * 2. - 0.5 + kpt_grid_x) * self.stride[i]
+                y1=(x_kpt[:,:,:,:, 1:2] * 2. - 0.5 + kpt_grid_y) * self.stride[i]
+                s1=x_kpt[:,:,:,:, 2:3].sigmoid()
+                landmarks1=torch.cat((x1,y1,s1),-1)
+
+                x2=(x_kpt[:,:,:,:, 3:4] * 2. - 0.5 + kpt_grid_x) * self.stride[i]
+                y2=(x_kpt[:,:,:,:, 4:5] * 2. - 0.5 + kpt_grid_y) * self.stride[i]
+                s2=x_kpt[:,:,:,:, 5:6].sigmoid()
+                landmarks2=torch.cat((x2,y2,s2),-1)
+
+                x3=(x_kpt[:,:,:,:, 6:7] * 2. - 0.5 + kpt_grid_x) * self.stride[i]
+                y3=(x_kpt[:,:,:,:, 7:8] * 2. - 0.5 + kpt_grid_y) * self.stride[i]
+                s3=x_kpt[:,:,:,:, 8:9].sigmoid()
+                landmarks3=torch.cat((x3,y3,s3),-1)
+
+                x4=(x_kpt[:,:,:,:, 9:10] * 2. - 0.5 + kpt_grid_x) * self.stride[i]
+                y4=(x_kpt[:,:,:,:, 10:11] * 2. - 0.5 + kpt_grid_y) * self.stride[i]
+                s4=x_kpt[:,:,:,:, 11:12].sigmoid()
+                landmarks4=torch.cat((x4,y4,s4),-1)
+
+
+
+                y = torch.cat((xy, wh, classfify, landmarks1,landmarks2,landmarks3,landmarks4), dim = -1)
+
+                z.append(y.view(bs, self.na*nx*ny, self.no))
+            return torch.cat(z,1)
+        
         for i in range(self.nl):
             if self.nkpt is None or self.nkpt==0:
                 x[i] = self.im[i](self.m[i](self.ia[i](x[i])))  # conv

@@ -30,3 +30,4 @@ plate/
 !*.txt
 !*.yaml
 !*.ttf
+!*.cu

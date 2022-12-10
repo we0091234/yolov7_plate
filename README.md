@@ -1,4 +1,3 @@
-
 # **yolov7车牌识别算法，支持12种中文车牌类型**
 
 **1.单行蓝牌**
@@ -14,7 +13,6 @@
 **11 双层农用车牌**
 **12 民航车牌**
 
-
 **测试demo:**
 
 ```
@@ -23,9 +21,8 @@ python detect_rec_plate.py --detect_model weights/plate_detect.pt  --rec_model w
 
 测试文件夹imgs，结果保存再 result 文件夹中
 
-
-
 ## **车牌检测训练**
+
 1. 下载数据集：  [datasets](https://pan.baidu.com/s/1rQ3ScJ_AdroDcKvUNW8Fhw) 提取码：g5wk    数据从CCPD和CRPD数据集中选取并转换的
    数据集格式为yolo格式：
 
@@ -67,14 +64,15 @@ python detect_rec_plate.py --detect_model weights/plate_detect.pt  --rec_model w
 
 ![Image ](data/images/demo.jpg)
 
+## 部署
 
-#### References
+* onnx 推理
+* tensorrt推理
+
+## References
 
 * [https://github.com/derronqi/yolov7-face](https://github.com/derronqi/yolov7-face)
-
 * [https://github.com/WongKinYiu/yolov7](https://github.com/WongKinYiu/yolov7)
-
 * [https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose](https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose)
-
 * [https://github.com/qinggangwu/yolov7-pose_Npoint_Ncla](https://github.com/qinggangwu/yolov7-pose_Npoint_Ncla)
 * [https://github.com/WongKinYiu/yolov7/tree/pose](https://github.com/WongKinYiu/yolov7/tree/pose)

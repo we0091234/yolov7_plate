@@ -12,6 +12,9 @@ from plate_recognition.plate_rec import get_plate_result,allFilePath,init_model,
 from plate_recognition.double_plate_split_merge import get_split_merge
 from utils.datasets import letterbox
 from utils.cv_puttext import cv2ImgAddText
+def cv_imread(path):
+    img=cv2.imdecode(np.fromfile(path,dtype=np.uint8),-1)
+    return img
 
 clors = [(255,0,0),(0,255,0),(0,0,255),(255,255,0),(0,255,255)]
 
@@ -72,6 +75,7 @@ def get_plate_rec_landmark(img, xyxy, conf, landmarks, class_num,device,plate_re
     result_dict['plate_no']=plate_number
     result_dict['roi_height']=roi_img.shape[0]
     result_dict['score']=conf
+    result_dict['label']=class_label
     return result_dict
 
 def detect_Recognition_plate(model, orgimg, device,plate_rec_model,img_size):
@@ -134,9 +138,9 @@ def draw_result(orgimg,dict_list):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--detect_model', nargs='+', type=str, default='weights/plate_detect.pt', help='model.pt path(s)')
+    parser.add_argument('--detect_model', nargs='+', type=str, default='runs/train/yolov75/weights/best.pt', help='model.pt path(s)')
     parser.add_argument('--rec_model', type=str, default='weights/plate_rec.pth', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='imgs', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--source', type=str, default='wan', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--output', type=str, default='result', help='source') 
@@ -156,7 +160,9 @@ if __name__ == '__main__':
     time_b = time.time()
     for pic_ in file_list:
         print(pic_,end=" ")
-        img = cv2.imread(pic_)
+        img = cv_imread(pic_)
+        if img.shape[-1]==4:
+            img=cv2.cvtColor(img,cv2.COLOR_BGRA2BGR)
         # img = my_letter_box(img)
         dict_list=detect_Recognition_plate(model, img, device,plate_rec_model,opt.img_size)
         ori_img=draw_result(img,dict_list)

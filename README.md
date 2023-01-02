@@ -23,7 +23,7 @@ python detect_rec_plate.py --detect_model weights/plate_detect.pt  --rec_model w
 
 ## **车牌检测训练**
 
-1. 下载数据集：  [datasets](https://pan.baidu.com/s/1rQ3ScJ_AdroDcKvUNW8Fhw) 提取码：g5wk    数据从CCPD和CRPD数据集中选取并转换的
+1. 下载数据集：  [datasets](https://pan.baidu.com/s/1xa6zvOGjU02j8_lqHGVf0A) 提取码：pi6c 数据从CCPD和CRPD数据集中选取并转换的
    数据集格式为yolo格式：
 
    ```

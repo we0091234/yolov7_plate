@@ -68,6 +68,7 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 
 * [onnx导出与推理](https://github.com/we0091234/yolov7_plate/tree/master/onnx)
 * [tensorrt推理](https://github.com/we0091234/yolov7_plate/tree/master/tensorrt)
+* [NCNN推理](https://github.com/we0091234/NCNN_SAMPLE/tree/master/ncnn_plate_v7)
 
 ## References
 

@@ -14,9 +14,9 @@
 **12 民航车牌**
 
 **测试demo:**
-
+以yolov7-lite-s 为例:
 ```
-python detect_rec_plate.py --detect_model weights/plate_detect.pt  --rec_model weights/plate_rec.pth --source imgs --output result
+python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model weights/plate_rec.pth --source imgs --output result
 ```
 
 测试文件夹imgs，结果保存再 result 文件夹中
@@ -45,9 +45,9 @@ python detect_rec_plate.py --detect_model weights/plate_detect.pt  --rec_model w
 
    ```
 3. 训练
-
+以yolov7-lite-s 为例:
    ```
-   python train.py  --batch-size 32 --data data/plate.yaml --img 640 640 --cfg cfg/yolov7-lite-e-plate.yaml --weights weights/yolov7-lite-e.pt --name yolov7 --hyp data/hyp.face.yaml
+   python train.py  --batch-size 32 --data data/plate.yaml --img 640 640 --cfg cfg/yolov7-lite-s.yaml --weights weights/yolov7-lite-s.pt --name yolov7 --hyp data/hyp.face.yaml
    ```
 
    结果存在run文件夹中
@@ -72,7 +72,7 @@ python detect_rec_plate.py --detect_model weights/plate_detect.pt  --rec_model w
 ## References
 
 * [https://github.com/derronqi/yolov7-face](https://github.com/derronqi/yolov7-face)
+* [https://github.com/qinggangwu/yolov7-pose_Npoint_Ncla](https://github.com/qinggangwu/yolov7-pose_Npoint_Ncla)
 * [https://github.com/WongKinYiu/yolov7](https://github.com/WongKinYiu/yolov7)
 * [https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose](https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose)
-* [https://github.com/qinggangwu/yolov7-pose_Npoint_Ncla](https://github.com/qinggangwu/yolov7-pose_Npoint_Ncla)
 * [https://github.com/WongKinYiu/yolov7/tree/pose](https://github.com/WongKinYiu/yolov7/tree/pose)

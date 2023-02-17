@@ -1,4 +1,4 @@
-from detect_rec_plate import detect_Recognition_plate,attempt_load,init_model,allFilePath,cv_imread,draw_result,four_point_transform,order_points
+from detect_rec_plate_macao import detect_Recognition_plate,attempt_load,init_model,allFilePath,cv_imread,draw_result,four_point_transform,order_points
 import os
 import argparse
 import torch
@@ -23,13 +23,13 @@ def is_car_number(pattern, string):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--detect_model', nargs='+', type=str, default=r'runs/train/yolov75/weights/best.pt', help='model.pt path(s)')
+    parser.add_argument('--detect_model', nargs='+', type=str, default=r'runs/train/yolov711/weights/best.pt', help='model.pt path(s)')
     parser.add_argument('--rec_model', type=str, default=r'weights/plate_rec.pth', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default=r'/mnt/Gpan/BaiduNetdiskDownload/VehicleColour/VehicleColour/', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--source', type=str, default=r'/mnt/Gpan/Mydata/pytorchPorject/datasets/macao_plate/download/', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--source', type=str, default=r'test2', help='source')
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
-    parser.add_argument('--output', type=str, default=r'/mnt/Gpan/BaiduNetdiskDownload/VehicleColour/result1', help='source') 
+    parser.add_argument('--output', type=str, default=r'/mnt/Gpan/Mydata/pytorchPorject/datasets/macao_plate/result/', help='source') 
     parser.add_argument('--kpt-label', type=int, default=4, help='number of keypoints')
     device  =torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # device = torch.device("cpu")
@@ -74,7 +74,8 @@ if __name__ == '__main__':
                 landmarks_np = np.array(landmarks).reshape(-1,2)
                 img_roi = four_point_transform(img,landmarks_np)
                 plate_no= result_['plate_no']
-                if len(plate_no)<6 or not is_car_number(pattern_str,plate_no):
+                # if len(plate_no)<6 or not is_car_number(pattern_str,plate_no):
+                if len(plate_no)<6:
                     continue
                 height = result_['roi_height']
                 # if height<48:

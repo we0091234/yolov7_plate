@@ -42,6 +42,15 @@ class SP(nn.Module):
     def forward(self, x):
         return self.m(x)
 
+class SPF(nn.Module):
+    def __init__(self, k=3, s=1):
+        super(SPF, self).__init__()
+        self.n = (k - 1) // 2
+        self.m = nn.Sequential(*[nn.MaxPool2d(kernel_size=3, stride=s, padding=1) for _ in range(self.n)])
+
+    def forward(self, x):
+        return self.m(x)
+
 
 class ImplicitA(nn.Module):
     def __init__(self, channel):
@@ -302,6 +311,27 @@ class SPPCSPC(nn.Module):
         y2 = self.cv2(x)
         return self.cv7(torch.cat((y1, y2), dim=1))
 
+class SPPFCSPC(nn.Module):
+    def __init__(self, c1, c2, n=1, shortcut=False, g=1, e=0.5, k=5):
+        super(SPPFCSPC, self).__init__()
+        c_ = int(2 * c2 * e)  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c1, c_, 1, 1)
+        self.cv3 = Conv(c_, c_, 3, 1)
+        self.cv4 = Conv(c_, c_, 1, 1)
+        self.m = nn.MaxPool2d(kernel_size=k, stride=1, padding=k // 2)
+        self.cv5 = Conv(4 * c_, c_, 1, 1)
+        self.cv6 = Conv(c_, c_, 3, 1)
+        self.cv7 = Conv(2 * c_, c2, 1, 1)
+
+    def forward(self, x):
+        x1 = self.cv4(self.cv3(self.cv1(x)))
+        x2 = self.m(x1)
+        x3 = self.m(x2)
+        y1 = self.cv6(self.cv5(torch.cat((x1,x2,x3, self.m(x3)),1)))
+        y2 = self.cv2(x)
+        return self.cv7(torch.cat((y1, y2), dim=1))
+
 class SPPF(nn.Module):
     # Spatial Pyramid Pooling - Fast (SPPF) layer for YOLOv5 by Glenn Jocher
     def __init__(self, c1, c2, k=5):  # equivalent to SPP(k=(5, 9, 13))
@@ -389,13 +419,30 @@ class Concat(nn.Module):
         return torch.cat(x, self.d)
 
 # yolov7-lite
+class StemBlock(nn.Module):
+    def __init__(self, c1, c2, k=3, s=2, p=None, g=1, act=True):
+        super(StemBlock, self).__init__()
+        self.stem_1 = Conv(c1, c2, k, s, p, g, act)
+        self.stem_2a = Conv(c2, c2 // 2, 1, 1, 0)
+        self.stem_2b = Conv(c2 // 2, c2, 3, 2, 1)
+        self.stem_2p = nn.MaxPool2d(kernel_size=2,stride=2,ceil_mode=True)
+        self.stem_3 = Conv(c2 * 2, c2, 1, 1, 0)
+
+    def forward(self, x):
+        stem_1_out  = self.stem_1(x)
+        stem_2a_out = self.stem_2a(stem_1_out)
+        stem_2b_out = self.stem_2b(stem_2a_out)
+        stem_2p_out = self.stem_2p(stem_1_out)
+        out = self.stem_3(torch.cat((stem_2b_out,stem_2p_out),1))
+        return out 
+
 class conv_bn_relu_maxpool(nn.Module):
     def __init__(self, c1, c2):  # ch_in, ch_out
         super(conv_bn_relu_maxpool, self).__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(c1, c2, kernel_size=3, stride=2, padding=1, bias=False),
             nn.BatchNorm2d(c2),
-            nn.ReLU(inplace=True),
+            nn.SiLU(inplace=True),
         )
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
 
@@ -404,23 +451,23 @@ class conv_bn_relu_maxpool(nn.Module):
 
 class DWConvblock(nn.Module):
     "Depthwise conv + Pointwise conv"
-
     def __init__(self, in_channels, out_channels, k, s):
         super(DWConvblock, self).__init__()
         self.p = k // 2
-        self.conv1 = nn.Conv2d(in_channels, in_channels, kernel_size=k, stride=s, padding=self.p, groups=in_channels,
-                               bias=False)
+        self.conv1 = nn.Conv2d(in_channels, in_channels, kernel_size=k, stride=s, padding=self.p, groups=in_channels, bias=False)
         self.bn1 = nn.BatchNorm2d(in_channels)
+        self.act1 = nn.SiLU(inplace=True)
         self.conv2 = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=False)
         self.bn2 = nn.BatchNorm2d(out_channels)
+        self.act2 = nn.SiLU(inplace=True)
 
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)
-        x = F.relu(x)
+        x = self.act1(x)
         x = self.conv2(x)
         x = self.bn2(x)
-        x = F.relu(x)
+        x = self.act2(x)
         return x
 
 class ADD(nn.Module):
@@ -438,14 +485,10 @@ def channel_shuffle(x, groups):
     channels_per_group = num_channels // groups
 
     # reshape
-    x = x.view(batchsize, groups,
-               channels_per_group, height, width)
-
+    x = x.view(batchsize, groups, channels_per_group, height, width)
     x = torch.transpose(x, 1, 2).contiguous()
-
     # flatten
     x = x.view(batchsize, -1, height, width)
-
     return x
 
 class Shuffle_Block(nn.Module):
@@ -465,19 +508,19 @@ class Shuffle_Block(nn.Module):
                 nn.BatchNorm2d(inp),
                 nn.Conv2d(inp, branch_features, kernel_size=1, stride=1, padding=0, bias=False),
                 nn.BatchNorm2d(branch_features),
-                nn.ReLU(inplace=True),
+                nn.SiLU(inplace=True),
             )
 
         self.branch2 = nn.Sequential(
             nn.Conv2d(inp if (self.stride > 1) else branch_features,
                       branch_features, kernel_size=1, stride=1, padding=0, bias=False),
             nn.BatchNorm2d(branch_features),
-            nn.ReLU(inplace=True),
+            nn.SiLU(inplace=True),
             self.depthwise_conv(branch_features, branch_features, kernel_size=3, stride=self.stride, padding=1),
             nn.BatchNorm2d(branch_features),
             nn.Conv2d(branch_features, branch_features, kernel_size=1, stride=1, padding=0, bias=False),
             nn.BatchNorm2d(branch_features),
-            nn.ReLU(inplace=True),
+            nn.SiLU(inplace=True),
         )
 
     @staticmethod

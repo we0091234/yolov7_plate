@@ -66,10 +66,16 @@ def get_plate_rec_landmark(img, xyxy, conf, landmarks, class_num,device,plate_re
 
     class_label= int(class_num)  #车牌的的类型0代表单牌，1代表双层车牌
     roi_img = four_point_transform(img,landmarks_np)   #透视变换得到车牌小图
-    if class_label:        #判断是否是双层车牌，是双牌的话进行分割后然后拼接
+    # cv2.imwrite("roi.jpg",roi_img)
+    # roi_img_h = roi_img.shape[0]
+    # roi_img_w = roi_img.shape[1]
+    # if roi_img_w/roi_img_h<3:
+    #     class_label=
+    # h_w_r = roi_img_w/roi_img_h
+    if class_label :        #判断是否是双层车牌，是双牌的话进行分割后然后拼接
         roi_img=get_split_merge(roi_img)
     plate_number = get_plate_result(roi_img,device,plate_rec_model)                 #对车牌小图进行识别
-    # cv2.imwrite("roi.jpg",roi_img)
+    
     result_dict['rect']=rect
     result_dict['landmarks']=landmarks_np.tolist()
     result_dict['plate_no']=plate_number
@@ -92,7 +98,7 @@ def detect_Recognition_plate(model, orgimg, device,plate_rec_model,img_size):
     if img.ndimension() == 3:
         img = img.unsqueeze(0)
     pred = model(img)[0]
-    pred = non_max_suppression(pred, conf_thres=conf_thres, iou_thres=iou_thres, kpt_label=4)
+    pred = non_max_suppression(pred, conf_thres=conf_thres, iou_thres=iou_thres, kpt_label=4,agnostic=True)
     for i, det in enumerate(pred):
         if len(det):
                 # Rescale boxes from img_size to im0 size
@@ -124,10 +130,10 @@ def draw_result(orgimg,dict_list):
 
         height_area = result['roi_height']
         landmarks=result['landmarks']
-        result = result['plate_no']+" "+"{:.2f}".format(result['score'])
+        result = result['plate_no']
         result_str+=result+" "
         cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,0,255),2) #画框
-        if len(result)>=7:
+        if len(result)>6:
             for i in range(4):  #关键点
                 cv2.circle(orgimg, (int(landmarks[i][0]), int(landmarks[i][1])), 5, clors[i], -1)
             
@@ -138,7 +144,7 @@ def draw_result(orgimg,dict_list):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--detect_model', nargs='+', type=str, default='runs/train/yolov75/weights/best.pt', help='model.pt path(s)')
+    parser.add_argument('--detect_model', nargs='+', type=str, default='weights/yolov7-lite-s.pt', help='model.pt path(s)')
     parser.add_argument('--rec_model', type=str, default='weights/plate_rec.pth', help='model.pt path(s)')
     parser.add_argument('--source', type=str, default='wan', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')

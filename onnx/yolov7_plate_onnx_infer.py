@@ -140,6 +140,14 @@ def restore_box(boxes,r,left,top):  #返回原图上面的坐标
     boxes[:,[1,3,6,8,10,12]]/=r
     return boxes
 
+def restore_box_2(boxes,r,left,top):  #返回原图上面的坐标
+    boxes[:,[0,2,5,7]]-=left
+    boxes[:,[1,3,6,8]]-=top
+
+    boxes[:,[0,2,5,7]]/=r
+    boxes[:,[1,3,6,8]]/=r
+    return boxes
+
 def detect_pre_precessing(img,img_size):  #检测前处理
     img,r,left,top=my_letter_box(img,img_size)
     # cv2.imwrite("1.jpg",img)
@@ -159,10 +167,12 @@ def post_precessing(dets,r,left,top,conf_thresh=0.3,iou_thresh=0.45):#检测后�
     index = np.argmax(dets[:,5:5+num_cls],axis=-1).reshape(-1,1)
     kpt_b=5+num_cls
     landmarks=dets[:,[kpt_b,kpt_b+1,kpt_b+3,kpt_b+4,kpt_b+6,kpt_b+7,kpt_b+9,kpt_b+10]]              #yolov7关键有三个数，x,y,score，这里我们只需要x,y
+    # landmarks=dets[:,[kpt_b,kpt_b+1,kpt_b+3,kpt_b+4]] 
     output = np.concatenate((boxes,score,landmarks,index),axis=1) 
     reserve_=my_nms(output,iou_thresh) 
     output=output[reserve_] 
     output = restore_box(output,r,left,top)
+    # output = restore_box_2(output,r,left,top)
     return output
 
 def rec_plate(outputs,img0,session_rec):  #识别车牌
@@ -214,7 +224,7 @@ def draw_result(orgimg,dict_list):
         for i in range(4):  #关键点
             cv2.circle(orgimg, (int(landmarks[i][0]), int(landmarks[i][1])), 5, clors[i], -1)
         cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,0,255),2) #画框
-        if len(result)<0:
+        if len(result)>6:
             orgimg=cv2ImgAddText(orgimg,result,rect_area[0]-height_area,rect_area[1]-height_area-10,(255,0,0),height_area)
     print(result_str)
     return orgimg

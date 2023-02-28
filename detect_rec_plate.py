@@ -133,7 +133,7 @@ def draw_result(orgimg,dict_list):
         result = result['plate_no']
         result_str+=result+" "
         cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,0,255),2) #画框
-        if len(result)>6:
+        if len(result)>1:
             for i in range(4):  #关键点
                 cv2.circle(orgimg, (int(landmarks[i][0]), int(landmarks[i][1])), 5, clors[i], -1)
             
@@ -146,7 +146,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--detect_model', nargs='+', type=str, default='weights/yolov7-lite-s.pt', help='model.pt path(s)')
     parser.add_argument('--rec_model', type=str, default='weights/plate_rec.pth', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='wan', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--source', type=str, default='imgs', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--output', type=str, default='result', help='source') 

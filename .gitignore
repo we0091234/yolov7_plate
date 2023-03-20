@@ -18,6 +18,8 @@ pretrained_model/
 cfg1/
 test_imgs/
 weixian/
+moto/
+pic/
 # 不忽略下面指定的文件类型
 !*.cpp
 !*.h

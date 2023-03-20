@@ -30,7 +30,9 @@ def order_points(pts):  #关键点按照（左上，右上，右下，左下）�
 
 
 def four_point_transform(image, pts):  #透视变换
-    rect = order_points(pts)
+    # rect = order_points(pts)
+    rect=pts.astype("float32")
+    
     (tl, tr, br, bl) = rect
     widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
     widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
@@ -145,14 +147,14 @@ def draw_result(orgimg,dict_list):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--detect_model', nargs='+', type=str, default='weights/yolov7-lite-s.pt', help='model.pt path(s)')
-    parser.add_argument('--rec_model', type=str, default='weights/plate_rec.pth', help='model.pt path(s)')
+    parser.add_argument('--rec_model', type=str, default='weights/plate_rec_small.pth', help='model.pt path(s)')
     parser.add_argument('--source', type=str, default='imgs', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--output', type=str, default='result', help='source') 
     parser.add_argument('--kpt-label', type=int, default=4, help='number of keypoints')
-    device  =torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # device = torch.device("cpu")
+    # device  =torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
     opt = parser.parse_args()
     print(opt)
     model = attempt_load(opt.detect_model, map_location=device)

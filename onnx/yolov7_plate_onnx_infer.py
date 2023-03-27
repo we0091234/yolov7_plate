@@ -232,10 +232,10 @@ def draw_result(orgimg,dict_list):
 if __name__ == "__main__":
    
     parser = argparse.ArgumentParser()
-    parser.add_argument('--detect_model',type=str, default=r'runs/train/yolov714/weights/best.onnx', help='model.pt path(s)')  #检测模型
+    parser.add_argument('--detect_model',type=str, default=r'weights/yolov7-lite-s.onnx', help='model.pt path(s)')  #检测模型
     parser.add_argument('--rec_model', type=str, default='weights/plate_rec.onnx', help='model.pt path(s)')#识别模型
     parser.add_argument('--image_path', type=str, default=r'pic', help='source') 
-    parser.add_argument('--img_size', type=int, default=320, help='inference size (pixels)')
+    parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--output', type=str, default='result', help='source') 
     opt = parser.parse_args()
     file_list = []

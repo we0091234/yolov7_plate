@@ -76,11 +76,14 @@ def get_plate_rec_landmark(img, xyxy, conf, landmarks, class_num,device,plate_re
     # h_w_r = roi_img_w/roi_img_h
     if class_label :        #判断是否是双层车牌，是双牌的话进行分割后然后拼接
         roi_img=get_split_merge(roi_img)
-    plate_number = get_plate_result(roi_img,device,plate_rec_model)                 #对车牌小图进行识别
+    plate_number,rec_prob,plate_color,color_conf = get_plate_result(roi_img,device,plate_rec_model)                 #对车牌小图进行识别
     
     result_dict['rect']=rect
     result_dict['landmarks']=landmarks_np.tolist()
     result_dict['plate_no']=plate_number
+    result_dict['rec_conf']=rec_prob   #每个字符的概率
+    result_dict['plate_color']=plate_color 
+    result_dict['color_conf']=color_conf 
     result_dict['roi_height']=roi_img.shape[0]
     result_dict['score']=conf
     result_dict['label']=class_label
@@ -122,39 +125,46 @@ def draw_result(orgimg,dict_list):
     for result in dict_list:
         rect_area = result['rect']
         
-        # x,y,w,h = rect_area[0],rect_area[1],rect_area[2]-rect_area[0],rect_area[3]-rect_area[1]
-        # padding_w = 0
-        # padding_h = 0
-        # rect_area[0]=max(0,int(x-padding_w))
-        # rect_area[1]=max(0,int(y-padding_h))
-        # rect_area[2]=min(orgimg.shape[0],int(rect_area[2]+padding_w))
-        # rect_area[3]=min(orgimg.shape[1],int(rect_area[3]+padding_h))
+        x,y,w,h = rect_area[0],rect_area[1],rect_area[2]-rect_area[0],rect_area[3]-rect_area[1]
+        padding_w = 0.05*w
+        padding_h = 0.11*h
+        rect_area[0]=max(0,int(x-padding_w))
+        rect_area[1]=max(0,int(y-padding_h))
+        rect_area[2]=min(orgimg.shape[1],int(rect_area[2]+padding_w))
+        rect_area[3]=min(orgimg.shape[0],int(rect_area[3]+padding_h))
+        rect_area = [int(x) for x in rect_area]
 
         height_area = result['roi_height']
         landmarks=result['landmarks']
-        result = result['plate_no']
-        result_str+=result+" "
+        result_p = result['plate_no']+" "+result['plate_color']
+        result_str+=result_p+" "
         cv2.rectangle(orgimg,(rect_area[0],rect_area[1]),(rect_area[2],rect_area[3]),(0,0,255),2) #画框
+        labelSize = cv2.getTextSize(result_p,cv2.FONT_HERSHEY_SIMPLEX,0.5,1)
+        if rect_area[0]+labelSize[0][0]>orgimg.shape[1]:                 #防止显示的文字越界
+            rect_area[0]=int(orgimg.shape[1]-labelSize[0][0])
+            
+        orgimg=cv2.rectangle(orgimg,(rect_area[0],int(rect_area[1]-round(1.6*labelSize[0][1]))),(int(rect_area[0]+round(1.2*labelSize[0][0])),rect_area[1]+labelSize[1]),(255,255,255),cv2.FILLED)
+        
         if len(result)>1:
             for i in range(4):  #关键点
                 cv2.circle(orgimg, (int(landmarks[i][0]), int(landmarks[i][1])), 5, clors[i], -1)
-            
-            orgimg=cv2ImgAddText(orgimg,result,rect_area[0]-height_area,rect_area[1]-height_area-10,(0,255,0),height_area)
+            orgimg=cv2ImgAddText(orgimg,result_p,rect_area[0],int(rect_area[1]-round(1.6*labelSize[0][1])),(0,0,0),21)
+            # orgimg=cv2ImgAddText(orgimg,result,rect_area[0]-height_area,rect_area[1]-height_area-10,(0,255,0),height_area)
     print(result_str)
     return orgimg
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--detect_model', nargs='+', type=str, default='weights/yolov7-lite-s.pt', help='model.pt path(s)')
-    parser.add_argument('--rec_model', type=str, default='weights/plate_rec_small.pth', help='model.pt path(s)')
+    parser.add_argument('--detect_model', nargs='+', type=str, default='weights/yolov7-lite-s.pt', help='model.pt path(s)') #检测模型
+    parser.add_argument('--rec_model', type=str, default='weights/plate_rec_color.pth', help='model.pt path(s)')  #车牌识别 +颜色识别
     parser.add_argument('--source', type=str, default='imgs', help='source')  # file/folder, 0 for webcam
     # parser.add_argument('--img-size', nargs= '+', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--img_size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--output', type=str, default='result', help='source') 
     parser.add_argument('--kpt-label', type=int, default=4, help='number of keypoints')
-    # device  =torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    device = torch.device("cpu")
+    device  =torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cpu")
     opt = parser.parse_args()
     print(opt)
     model = attempt_load(opt.detect_model, map_location=device)

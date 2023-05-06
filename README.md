@@ -58,8 +58,6 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 
 [车牌识别训练](https://github.com/we0091234/crnn_plate_recognition)
 
-**有问题可以提issues 或者加qq群:871797331 询问**
-
 支持如下：
 
 ![Image ](data/images/demo.jpg)
@@ -77,3 +75,7 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 * [https://github.com/WongKinYiu/yolov7](https://github.com/WongKinYiu/yolov7)
 * [https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose](https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose)
 * [https://github.com/WongKinYiu/yolov7/tree/pose](https://github.com/WongKinYiu/yolov7/tree/pose)
+
+**有问题可以提issues 或者加qq群:823419837 询问**
+
+![Image ](data/images/1.png)

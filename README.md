@@ -15,6 +15,7 @@
 
 **测试demo:**
 以yolov7-lite-s 为例:
+
 ```
 python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model weights/plate_rec.pth --source imgs --output result
 ```
@@ -45,7 +46,8 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 
    ```
 3. 训练
-以yolov7-lite-s 为例:
+   以yolov7-lite-s 为例:
+
    ```
    python train.py  --batch-size 32 --data data/plate.yaml --img 640 640 --cfg cfg/yolov7-lite-s.yaml --weights weights/yolov7-lite-s.pt --name yolov7 --hyp data/hyp.face.yaml
    ```
@@ -76,6 +78,8 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 * [https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose](https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose)
 * [https://github.com/WongKinYiu/yolov7/tree/pose](https://github.com/WongKinYiu/yolov7/tree/pose)
 
-**有问题可以提issues 或者加qq群:823419837 询问**
+**有问题添加微信: xiaolei19920229，拉进微信群**
+
+**或者加qq群:823419837 询问**
 
 ![Image ](data/images/1.png)

@@ -24,7 +24,7 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 
 ## **车牌检测训练**
 
-1. 下载数据集：  [datasets](https://pan.baidu.com/s/1xa6zvOGjU02j8_lqHGVf0A) 提取码：pi6c 数据从CCPD和CRPD数据集中选取并转换的
+1. 下载数据集： 联系本人获取 联系方式最下面 数据从CCPD和CRPD数据集中选取并转换的
    数据集格式为yolo格式：
 
    ```
@@ -78,7 +78,7 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 * [https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose](https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose)
 * [https://github.com/WongKinYiu/yolov7/tree/pose](https://github.com/WongKinYiu/yolov7/tree/pose)
 
-**有问题添加微信: xiaolei19920229，拉进微信群**
+**有问题添加微信: we0091234，拉进微信群**
 
 **或者加qq群:823419837 询问**
 

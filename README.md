@@ -78,7 +78,7 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 * [https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose](https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose)
 * [https://github.com/WongKinYiu/yolov7/tree/pose](https://github.com/WongKinYiu/yolov7/tree/pose)
 
-**有问题添加微信: we0091234，拉进微信群**
+**有问题添加微信: we0091234（注明来意）**
 
 **或者加qq群:823419837(已满) 请加 837982567（二群） 询问**
 

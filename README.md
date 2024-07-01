@@ -80,6 +80,5 @@ python detect_rec_plate.py --detect_model weights/yolov7-lite-s.pt  --rec_model 
 
 **有问题添加微信: we0091234（注明来意）**
 
-**或者加qq群:823419837(已满) 请加 837982567（二群） 询问**
+**或者加qq群:769809695（三群新开） 823419837(已满) 请加 837982567（二群） 询问**
 
-![Image ](data/images/105384078.png)
